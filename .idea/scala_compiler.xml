@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project version="4">
-  <component name="ScalaCompilerConfiguration">
-    <profile name="sbt 1" modules="lagom-internal-meta-project-cassandra,lagom-internal-meta-project-kafka,lagom-internal-meta-project-service-locator,spoiler-alert,spoiler-alert-api,spoiler-alert-impl,spoiler-alert-stream-api,spoiler-alert-stream-impl,spoiler-alert_338" />
-  </component>
-</project>
