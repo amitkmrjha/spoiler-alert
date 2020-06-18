@@ -11,3 +11,15 @@ bin
 .factorypath
 .settings
 logs
+
+*.class
+*.log
+
+.idea
+.bloop
+.metals
+.vscode
+
+*.bat
+*.db
+*.iml

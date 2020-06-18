@@ -8,7 +8,7 @@ val macwire = "com.softwaremill.macwire" %% "macros" % "2.3.3" % "provided"
 val scalaTest = "org.scalatest" %% "scalatest" % "3.1.1" % Test
 
 lazy val `spoiler-alert` = (project in file("."))
-  .aggregate(`spoiler-alert-api`, `spoiler-alert-impl`, `spoiler-alert-stream-api`, `spoiler-alert-stream-impl`)
+  .aggregate(`spoiler-alert-api`, `spoiler-alert-impl`)
 
 lazy val `spoiler-alert-api` = (project in file("spoiler-alert-api"))
   .settings(
@@ -31,20 +31,3 @@ lazy val `spoiler-alert-impl` = (project in file("spoiler-alert-impl"))
   .settings(lagomForkedTestSettings)
   .dependsOn(`spoiler-alert-api`)
 
-lazy val `spoiler-alert-stream-api` = (project in file("spoiler-alert-stream-api"))
-  .settings(
-    libraryDependencies ++= Seq(
-      lagomScaladslApi
-    )
-  )
-
-lazy val `spoiler-alert-stream-impl` = (project in file("spoiler-alert-stream-impl"))
-  .enablePlugins(LagomScala)
-  .settings(
-    libraryDependencies ++= Seq(
-      lagomScaladslTestKit,
-      macwire,
-      scalaTest
-    )
-  )
-  .dependsOn(`spoiler-alert-stream-api`, `spoiler-alert-api`)
