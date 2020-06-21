@@ -34,7 +34,7 @@ private[impl] class SpoilerAlertEventProcessor(session: CassandraSession,
       .build()
   }
 
-  override def aggregateTags: Set[AggregateEventTag[SpoilerAlertEvent]] =  Set(SpoilerAlertEvent.Tag)
+  override def aggregateTags: Set[AggregateEventTag[SpoilerAlertEvent]] = Set(SpoilerAlertEvent.SpoilerAlertEventTag)
 
   private def createTables() = {
     for {

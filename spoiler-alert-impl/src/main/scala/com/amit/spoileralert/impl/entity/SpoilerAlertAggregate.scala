@@ -51,7 +51,7 @@ object SpoilerAlertBehavior {
         // Using Akka Persistence Typed in Lagom requires tagging your events
         // in Lagom-compatible way so Lagom ReadSideProcessors and TopicProducers
         // can locate and follow the event streams.
-        AkkaTaggerAdapter.fromLagom(entityContext, SpoilerAlertEvent.Tag)
+        AkkaTaggerAdapter.fromLagom(entityContext, SpoilerAlertEvent.SpoilerAlertEventTag)
       )
 
   }

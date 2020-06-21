@@ -8,11 +8,11 @@ import play.api.libs.json.{Format, JsResult, JsSuccess, JsValue, Json, Reads, Wr
  * This interface defines all the events that the SpoilerAlertAggregate supports.
  */
 sealed trait SpoilerAlertEvent extends AggregateEvent[SpoilerAlertEvent] {
-  def aggregateTag: AggregateEventTag[SpoilerAlertEvent] = SpoilerAlertEvent.Tag
+  override def aggregateTag: AggregateEventTag[SpoilerAlertEvent] =SpoilerAlertEvent.SpoilerAlertEventTag
 }
 
 object SpoilerAlertEvent {
-  val Tag: AggregateEventTag[SpoilerAlertEvent] = AggregateEventTag[SpoilerAlertEvent]
+  val SpoilerAlertEventTag = AggregateEventTag[SpoilerAlertEvent]
 }
 
 /**
