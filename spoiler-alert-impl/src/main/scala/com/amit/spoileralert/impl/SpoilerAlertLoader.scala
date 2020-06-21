@@ -8,6 +8,8 @@ import com.lightbend.lagom.scaladsl.server._
 import com.lightbend.lagom.scaladsl.devmode.LagomDevModeComponents
 import play.api.libs.ws.ahc.AhcWSComponents
 import com.amit.spoileralert.api.SpoilerAlertService
+import com.amit.spoileralert.impl.daos.{AutoKeyDao, AutoKeyDaoImpl, UserSeriesDao}
+import com.amit.spoileralert.impl.entity.{SpoilerAlertBehavior, SpoilerAlertSerializerRegistry, SpoilerAlertState}
 import com.lightbend.lagom.scaladsl.broker.kafka.LagomKafkaComponents
 import com.lightbend.lagom.scaladsl.playjson.JsonSerializerRegistry
 import com.softwaremill.macwire._
@@ -15,17 +17,17 @@ import com.softwaremill.macwire._
 class SpoilerAlertLoader extends LagomApplicationLoader {
 
   override def load(context: LagomApplicationContext): LagomApplication =
-    new SpoileralertApplication(context) {
+    new SpoilerAlertApplication(context) {
       override def serviceLocator: ServiceLocator = NoServiceLocator
     }
 
   override def loadDevMode(context: LagomApplicationContext): LagomApplication =
-    new SpoileralertApplication(context) with LagomDevModeComponents
+    new SpoilerAlertApplication(context) with LagomDevModeComponents
 
   override def describeService = Some(readDescriptor[SpoilerAlertService])
 }
 
-abstract class SpoileralertApplication(context: LagomApplicationContext)
+abstract class SpoilerAlertApplication(context: LagomApplicationContext)
   extends LagomApplication(context)
     with CassandraPersistenceComponents
     with LagomKafkaComponents
@@ -35,13 +37,19 @@ abstract class SpoileralertApplication(context: LagomApplicationContext)
   override lazy val lagomServer: LagomServer = serverFor[SpoilerAlertService](wire[SpoilerAlertServiceImpl])
 
   // Register the JSON serializer registry
-  override lazy val jsonSerializerRegistry: JsonSerializerRegistry = SpoileralertSerializerRegistry
+  override lazy val jsonSerializerRegistry: JsonSerializerRegistry = SpoilerAlertSerializerRegistry
+
+  readSide.register(wire[SpoilerAlertEventProcessor])
+
+  lazy val autoKeyDao: AutoKeyDao = wire[AutoKeyDaoImpl]
+
+  lazy val userSeriesDao: UserSeriesDao = wire[UserSeriesDao]
+
 
   // Initialize the sharding of the Aggregate. The following starts the aggregate Behavior under
   // a given sharding entity typeKey.
-  clusterSharding.init(
-    Entity(SpoileralertState.typeKey)(
-      entityContext => SpoileralertBehavior.create(entityContext)
+  clusterSharding.init( Entity(SpoilerAlertBehavior.typeKey)(
+      entityContext => SpoilerAlertBehavior.create(entityContext)
     )
   )
 

@@ -11,7 +11,7 @@ class SpoilerAlertServiceSpec extends AsyncWordSpec with Matchers with BeforeAnd
     ServiceTest.defaultSetup
       .withCassandra()
   ) { ctx =>
-    new SpoileralertApplication(ctx) with LocalServiceLocator
+    new SpoilerAlertApplication(ctx) with LocalServiceLocator
   }
 
   val client: SpoilerAlertService = server.serviceClient.implement[SpoilerAlertService]

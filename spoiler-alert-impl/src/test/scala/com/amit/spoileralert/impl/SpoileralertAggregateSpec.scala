@@ -4,6 +4,7 @@ import java.util.UUID
 
 import akka.actor.testkit.typed.scaladsl.ScalaTestWithActorTestKit
 import akka.persistence.typed.PersistenceId
+import com.amit.spoileralert.impl.entity.{Accepted, Confirmation, Greeting, SpoilerAlertBehavior}
 import org.scalatest.Matchers
 import org.scalatest.WordSpecLike
 
@@ -17,13 +18,13 @@ class SpoileralertAggregateSpec extends ScalaTestWithActorTestKit(s"""
 
     "say hello by default" in {
       val probe = createTestProbe[Greeting]()
-      val ref = spawn(SpoileralertBehavior.create(PersistenceId("fake-type-hint", "fake-id")))
+      val ref = spawn(SpoilerAlertBehavior.create(PersistenceId("fake-type-hint", "fake-id")))
       ref ! Hello("Alice", probe.ref)
       probe.expectMessage(Greeting("Hello, Alice!"))
     }
 
     "allow updating the greeting message" in  {
-      val ref = spawn(SpoileralertBehavior.create(PersistenceId("fake-type-hint", "fake-id")))
+      val ref = spawn(SpoilerAlertBehavior.create(PersistenceId("fake-type-hint", "fake-id")))
 
       val probe1 = createTestProbe[Confirmation]()
       ref ! UseGreetingMessage("Hi", probe1.ref)

@@ -6,9 +6,19 @@ scalaVersion in ThisBuild := "2.13.0"
 
 val macwire = "com.softwaremill.macwire" %% "macros" % "2.3.3" % "provided"
 val scalaTest = "org.scalatest" %% "scalatest" % "3.1.1" % Test
+val playJsonDerivedCodecs = "org.julienrf" %% "play-json-derived-codecs" % "7.0.0"
 
 lazy val `spoiler-alert` = (project in file("."))
   .aggregate(`spoiler-alert-api`, `spoiler-alert-impl`)
+
+lazy val `common` = (project in file("common"))
+  .settings(
+    libraryDependencies ++= Seq(
+      lagomScaladslApi,
+      playJsonDerivedCodecs,
+      scalaTest
+    )
+  )
 
 lazy val `spoiler-alert-api` = (project in file("spoiler-alert-api"))
   .settings(
@@ -16,6 +26,7 @@ lazy val `spoiler-alert-api` = (project in file("spoiler-alert-api"))
       lagomScaladslApi
     )
   )
+  .dependsOn(`common`)
 
 lazy val `spoiler-alert-impl` = (project in file("spoiler-alert-impl"))
   .enablePlugins(LagomScala)
@@ -29,5 +40,11 @@ lazy val `spoiler-alert-impl` = (project in file("spoiler-alert-impl"))
     )
   )
   .settings(lagomForkedTestSettings)
-  .dependsOn(`spoiler-alert-api`)
+  .dependsOn(`common`,`spoiler-alert-api`)
 
+
+lagomKafkaEnabled in ThisBuild := false
+lagomKafkaAddress in ThisBuild := "localhost:9092"
+
+lagomCassandraEnabled in ThisBuild := false
+lagomUnmanagedServices in ThisBuild := Map("cas_native" -> "tcp://localhost:9042")
