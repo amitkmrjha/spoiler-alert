@@ -23,10 +23,7 @@ object SpoilerAlertService  {
   */
 trait SpoilerAlertService extends Service {
 
-  /**
-    * Example: curl -H "Content-Type: application/json" -X POST -d '{"userName:":
-    * "abc",seriesName = "GOT", percentage = 10}' http://localhost:9000/api/vi/userseries
-    */
+
   def inputUserSeriesProgress: ServiceCall[UserSeriesStatus, UserSeriesStatus]
 
   def getUserSeriesProgress(key: String): ServiceCall[NotUsed, UserSeriesStatus]

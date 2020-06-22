@@ -51,10 +51,6 @@ class SpoilerAlertServiceImpl(
 
   implicit val timeout = Timeout(5.seconds)
 
-  /**
-   * Example: curl -H "Content-Type: application/json" -X POST -d '{"userName:":
-   * "abc",seriesName = "GOT", percentage = 10}' http://localhost:9000/api/vi/userseries
-   */
   override def inputUserSeriesProgress: ServiceCall[UserSeriesStatus, UserSeriesStatus] = logged(
     ServerServiceCall {  uss =>
       handleNewEntity(uss).flatMap(x => x match {
@@ -95,7 +91,7 @@ class SpoilerAlertServiceImpl(
     ServerServiceCall {  uss =>
       getSpoilerAlertEntity(username,seriesname).flatMap(x => x match {
         case None => Future.successful(throw BadRequest(s"Spoiler Alert for username ${username} seriesname ${seriesname} not found."))
-        case Some(entity) =>handleSameProgress(entity)
+        case Some(entity) =>handleSameProgressQuery(entity)
       })
     }
   }
@@ -118,10 +114,7 @@ class SpoilerAlertServiceImpl(
     })
   }
 
-  private def handleSameProgress(input: UserSeriesStatus):Future[Seq[String]] = {
-    userSeriesDao.getBySeriesPercentage(input.seriesName,input.percentage)
-      .map(_ map(_.userName)filterNot( _ == input.userName))
-  }
+
 
   private def handleSpoilersQuery(input: Seq[String]):Future[Seq[SpoilerResponse]] = {
     userSeriesDao.getByUsers(input).map { entities =>

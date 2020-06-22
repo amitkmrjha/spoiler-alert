@@ -4,7 +4,9 @@ import java.util.UUID
 
 import akka.actor.testkit.typed.scaladsl.ScalaTestWithActorTestKit
 import akka.persistence.typed.PersistenceId
-import com.amit.spoileralert.impl.entity.{Accepted, Confirmation, Greeting, SpoilerAlertBehavior}
+import com.amit.spoiler.UserSeriesStatus
+import com.amit.spoileralert.impl.entity.{Accepted, Confirmation, CreateSpoilerAlert, GetSpoilerAlert, SpoilerAlertBehavior, SpoilerAlertCommand, Summary, UpdateSpoilerAlert}
+import com.datastax.driver.core.utils.UUIDs
 import org.scalatest.Matchers
 import org.scalatest.WordSpecLike
 
@@ -16,23 +18,26 @@ class SpoileralertAggregateSpec extends ScalaTestWithActorTestKit(s"""
 
   "spoiler-alert aggregate" should {
 
-    "say hello by default" in {
-      val probe = createTestProbe[Greeting]()
+    "say create spoiler-alert by default" in {
+      val probe = createTestProbe[Confirmation]()
       val ref = spawn(SpoilerAlertBehavior.create(PersistenceId("fake-type-hint", "fake-id")))
-      ref ! Hello("Alice", probe.ref)
-      probe.expectMessage(Greeting("Hello, Alice!"))
+      val p: UserSeriesStatus = UserSeriesStatus(Option(UUIDs.timeBased), Option("bak"),"hello", "ozark",10)
+
+      ref ! CreateSpoilerAlert(p, probe.ref)
+      probe.expectMessage(Accepted(Summary(p)))
     }
 
-    "allow updating the greeting message" in  {
+    "allow updating the spoiler-alert" in  {
       val ref = spawn(SpoilerAlertBehavior.create(PersistenceId("fake-type-hint", "fake-id")))
 
       val probe1 = createTestProbe[Confirmation]()
-      ref ! UseGreetingMessage("Hi", probe1.ref)
-      probe1.expectMessage(Accepted)
+      val p: UserSeriesStatus = UserSeriesStatus(Option(UUIDs.timeBased), Option("bak"),"hello", "ozark",20)
+      ref ! UpdateSpoilerAlert(p, probe1.ref)
+      probe1.expectMessage(Accepted(Summary(p)))
 
-      val probe2 = createTestProbe[Greeting]()
-      ref ! Hello("Alice", probe2.ref)
-      probe2.expectMessage(Greeting("Hi, Alice!"))
+      val probe2 = createTestProbe[Confirmation]()
+      ref ! GetSpoilerAlert(probe2.ref)
+      probe2.expectMessage(Accepted(Summary(p)))
     }
 
   }
