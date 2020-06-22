@@ -126,19 +126,18 @@ class SpoilerAlertServiceImpl(
   }
 
   private def handleSpoilersQuery(input: Seq[String]):Future[Seq[SpoilerResponse]] = {
-    userSeriesDao.getByUsers(input).map{entities =>
-      entities.groupBy(_.userName).map{ x  =>
-        val buddyName = x._1
-        val seriesSpoilers = x._2.groupBy(_.seriesName).map { s =>
+    userSeriesDao.getByUsers(input).map { entities =>
+      input.map { user =>
+        val seriesSpoilers = entities.groupBy(_.seriesName).map { s =>
           val series = s._1
-          val spoilerFor = s._2.find(e => e.userName == buddyName && e.seriesName == series)
+          val spoilerFor = s._2.find(e => e.userName == user && e.seriesName == series)
           val spoilers = spoilerFor.map { l =>
             s._2.filter(k => k.userName != l.userName && k.percentage > l.percentage).map(_.userName)
           }.getOrElse(Seq.empty)
           SeriesSpoiler(series, spoilers)
         }
-          SpoilerResponse(buddyName,seriesSpoilers.toSeq)
-      }.toSeq
+        SpoilerResponse(user, seriesSpoilers.toSeq)
+      }
     }
   }
 

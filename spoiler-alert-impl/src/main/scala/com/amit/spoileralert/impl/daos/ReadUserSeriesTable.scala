@@ -131,8 +131,6 @@ object UserSeriesByUserTable extends ReadUserSeriesTable {
   def getByUsersQueryString(userNames:Seq[String]): String = {
     val select = QueryBuilder.select().from(tableName)
       .where(QueryBuilder.in(Columns.UserName, userNames: _* ))
-
-    println(s"select.toString ${select.toString}")
     select.toString
   }
 
