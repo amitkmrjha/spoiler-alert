@@ -128,6 +128,14 @@ object UserSeriesByUserTable extends ReadUserSeriesTable {
     select.toString
   }
 
+  def getByUsersQueryString(userNames:Seq[String]): String = {
+    val select = QueryBuilder.select().from(tableName)
+      .where(QueryBuilder.in(Columns.UserName, userNames: _* ))
+
+    println(s"select.toString ${select.toString}")
+    select.toString
+  }
+
   def getByUserSeriesQueryString(userName:String,seriesName: String): String = {
     val select = QueryBuilder.select().from(tableName)
       .where(QueryBuilder.eq(Columns.UserName, userName))
@@ -135,3 +143,36 @@ object UserSeriesByUserTable extends ReadUserSeriesTable {
     select.toString
   }
 }
+
+object UserSeriesBySeriesPercentageTable extends ReadUserSeriesTable {
+
+  override protected def tableName: String  = ColumnFamilies.SpoilerAlertBySeriesPercentage
+
+  override protected def primaryKey: String = s"${Columns.SeriesName},${Columns.Percentage},${Columns.UserName}"
+
+  override protected def prepareDelete: Delete.Where  = QueryBuilder.delete().from(tableName)
+    .where(QueryBuilder.eq(Columns.SeriesName, QueryBuilder.bindMarker()))
+    .and(QueryBuilder.eq(Columns.Percentage, QueryBuilder.bindMarker()))
+
+  override protected def getDeleteBindValues(entity: UserSeriesStatus): Seq[AnyRef]  = {
+    val bindValues: Seq[AnyRef] = Seq(
+      entity.seriesName,
+      entity.percentage.asInstanceOf[AnyRef]
+    )
+    bindValues
+  }
+
+  def getBySeriesPercentageQueryString(series: String,percentage:Double): String = {
+    val select = QueryBuilder.select().from(tableName)
+      .where(QueryBuilder.eq(Columns.SeriesName, series))
+        .and(QueryBuilder.eq(Columns.Percentage, percentage))
+    select.toString
+  }
+
+  def getBySeriesQueryString(seriesName:String): String = {
+    val select = QueryBuilder.select().from(tableName)
+      .where(QueryBuilder.eq(Columns.SeriesName, seriesName))
+    select.toString
+  }
+}
+

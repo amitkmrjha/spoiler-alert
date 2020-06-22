@@ -3,7 +3,8 @@ package com.amit.spoileralert.api
 import java.util.UUID
 
 import akka.{Done, NotUsed}
-import com.amit.spoiler.UserSeriesStatus
+import com.amit.spoiler.{SpoilerResponse, UserSeriesStatus}
+import com.lightbend.lagom.scaladsl.api.Service.restCall
 import com.lightbend.lagom.scaladsl.api.broker.Topic
 import com.lightbend.lagom.scaladsl.api.broker.kafka.{KafkaProperties, PartitionKeyStrategy}
 import com.lightbend.lagom.scaladsl.api.transport.Method
@@ -30,13 +31,19 @@ trait SpoilerAlertService extends Service {
 
   def getUserSeriesProgress(key: String): ServiceCall[NotUsed, UserSeriesStatus]
 
+  def getSameProgressUsers(username: String,seriesname: String): ServiceCall[NotUsed, Seq[String]]
+
+  def getSpoilers: ServiceCall[Seq[String], Seq[SpoilerResponse]]
+
   override final def descriptor: Descriptor = {
     import Service._
     // @formatter:off
     named("spoiler-alert")
       .withCalls(
-        restCall(Method.POST, "/api/vi/userseries", inputUserSeriesProgress _),
-        restCall(Method.GET, "/api/vi/userseries/:id", getUserSeriesProgress _)
+        restCall(Method.POST,"/api/vi/userseries", inputUserSeriesProgress _),
+        restCall(Method.GET, "/api/vi/userseries/:id", getUserSeriesProgress _),
+        restCall(Method.GET, "/api/vi/userseries/match/:username/:seriesname", getSameProgressUsers _),
+        restCall(Method.POST, "/api/vi/userseries/spoilers", getSpoilers _)
       )
       .withAutoAcl(true)
     // @formatter:on

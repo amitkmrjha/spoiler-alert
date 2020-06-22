@@ -17,9 +17,17 @@ private[impl] class UserSeriesDao(session: CassandraSession, messagesApi: Messag
     sessionSelectCount(UserSeriesTable.getCountQueryString)
   }
 
-   def getbyUserAndSeries(userName: String, seriesName: String) :Future[Option[UserSeriesStatus]] = {
+  def getByUsers(userNames: Seq[String]) :Future[Seq[UserSeriesStatus]] = {
+    sessionSelectAll(UserSeriesByUserTable.getByUsersQueryString(userNames))
+  }
+
+   def getByUserAndSeries(userName: String, seriesName: String) :Future[Option[UserSeriesStatus]] = {
      sessionSelectOne(UserSeriesByUserTable.getByUserSeriesQueryString(userName,seriesName))
    }
+
+  def getBySeriesPercentage(seriesName: String, percentage: Double) :Future[Seq[UserSeriesStatus]] = {
+    sessionSelectAll(UserSeriesBySeriesPercentageTable.getBySeriesPercentageQueryString(seriesName,percentage))
+  }
 
   private def getUserSeriesByKey(key: String): Future[Option[UserSeriesStatus]] = {
     sessionSelectOne(UserSeriesByKeyTable.getByKeyQueryString(key))

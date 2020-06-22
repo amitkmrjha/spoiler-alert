@@ -32,6 +32,15 @@ percentage double,
 PRIMARY KEY (user_name,series_name)
 );
 
+CREATE TABLE IF NOT EXISTS spoiler_alert.spoileralerts_by_series_percentage (
+id timeuuid,
+key text,
+user_name text,
+series_name text,
+percentage double,
+PRIMARY KEY (series_name,percentage,user_name)
+);
+
 CREATE TABLE IF NOT EXISTS spoiler_alert.auto_key (
 model_context text,
 model_name text,

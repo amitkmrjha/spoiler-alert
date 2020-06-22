@@ -2,15 +2,15 @@ package com.amit.spoileralert.impl
 
 import akka.Done
 import com.amit.spoiler.UserSeriesStatus
-import com.amit.spoileralert.impl.daos.{AutoKeyTable, UserSeriesByKeyTable, UserSeriesByUserTable, UserSeriesTable}
+import com.amit.spoileralert.impl.daos.{AutoKeyTable, UserSeriesByKeyTable, UserSeriesBySeriesPercentageTable, UserSeriesByUserTable, UserSeriesTable}
 import com.amit.spoileralert.impl.entity.{SpoilerAlertCreated, SpoilerAlertDeleted, SpoilerAlertEvent, SpoilerAlertUpdated}
 import com.datastax.driver.core.{BoundStatement, PreparedStatement}
 import com.lightbend.lagom.scaladsl.persistence.cassandra.{CassandraReadSide, CassandraSession}
 import com.lightbend.lagom.scaladsl.persistence.{AggregateEventTag, ReadSideProcessor}
 import play.api.Logger
 import play.api.i18n.{Langs, MessagesApi}
-import scala.language.postfixOps
 
+import scala.language.postfixOps
 import scala.concurrent.{ExecutionContext, Future, Promise}
 
 private[impl] class SpoilerAlertEventProcessor(session: CassandraSession,
@@ -41,6 +41,7 @@ private[impl] class SpoilerAlertEventProcessor(session: CassandraSession,
       _ <- UserSeriesTable.createTable()(session, ec)
       _ <- UserSeriesByKeyTable.createTable()(session, ec)
       _ <- UserSeriesByUserTable.createTable()(session, ec)
+      _ <- UserSeriesBySeriesPercentageTable.createTable()(session, ec)
 
       _ <- sessionExecuteCreateTable(AutoKeyTable.tableScript)
     } yield Done
@@ -51,15 +52,17 @@ private[impl] class SpoilerAlertEventProcessor(session: CassandraSession,
       ie<- UserSeriesTable.insert(entity)(session, ec)
       iebk <- UserSeriesByKeyTable.insert(entity)(session, ec)
       iebu <- UserSeriesByUserTable.insert(entity)(session, ec)
-    } yield List(ie, iebk,iebu) flatten
+      iesp <- UserSeriesBySeriesPercentageTable.insert(entity)(session, ec)
+    } yield List(ie, iebk,iebu,iesp) flatten
   }
 
   private def spoilerAlertDelete(entity: UserSeriesStatus) = {
     for {
-      ie<- UserSeriesTable.insert(entity)(session, ec)
-      iebk <- UserSeriesByKeyTable.insert(entity)(session, ec)
-      iebu <- UserSeriesByUserTable.insert(entity)(session, ec)
-    } yield List(ie, iebk,iebu) flatten
+      ie<- UserSeriesTable.delete(entity)(session, ec)
+      iebk <- UserSeriesByKeyTable.delete(entity)(session, ec)
+      iebu <- UserSeriesByUserTable.delete(entity)(session, ec)
+      iesp <- UserSeriesBySeriesPercentageTable.delete(entity)(session, ec)
+    } yield List(ie, iebk,iebu,iesp) flatten
   }
 
   private def bindPrepare(ps: Promise[PreparedStatement], bindV: Seq[AnyRef]): Future[BoundStatement] = {
@@ -79,6 +82,7 @@ private[impl] class SpoilerAlertEventProcessor(session: CassandraSession,
       _ <- UserSeriesTable.prepareStatement()(session, ec)
       _ <- UserSeriesByKeyTable.prepareStatement()(session, ec)
       _ <- UserSeriesByUserTable.prepareStatement()(session, ec)
+      _ <- UserSeriesBySeriesPercentageTable.prepareStatement()(session, ec)
     } yield {
       Done
     }
