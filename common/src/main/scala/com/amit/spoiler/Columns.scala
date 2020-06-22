@@ -8,9 +8,5 @@ object Columns {
   val SeriesName: String = "series_name"
   val Percentage = "percentage"
 
-  val ModelContext: String = "model_context"
-  val ModelName: String = "model_name"
-  val KeyNumber: String = "key_number"
-
-  val Count: String = "count"
+    val Count: String = "count"
 }

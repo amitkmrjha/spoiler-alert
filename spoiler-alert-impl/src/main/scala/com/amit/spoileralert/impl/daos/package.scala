@@ -13,8 +13,6 @@ package object daos {
     val SpoilerAlertsByKey: String = "spoileralerts_by_key"
     val SpoilerAlertByUser: String = "spoileralerts_by_users_series"
     val SpoilerAlertBySeriesPercentage: String = "spoileralerts_by_series_percentage"
-
-    val AutoKey: String = "auto_key"
   }
 }
 

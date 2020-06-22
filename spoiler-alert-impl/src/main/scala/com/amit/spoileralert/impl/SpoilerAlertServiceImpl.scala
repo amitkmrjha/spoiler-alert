@@ -19,7 +19,7 @@ import scala.concurrent.{ExecutionContext, Future}
 import scala.concurrent.duration._
 import akka.util.Timeout
 import com.amit.spoiler.{SeriesSpoiler, SpoilerResponse, UserSeriesStatus}
-import com.amit.spoileralert.impl.daos.{AutoKeyDao, UserSeriesDao}
+import com.amit.spoileralert.impl.daos.{ UserSeriesDao}
 import com.amit.spoileralert.impl.entity.{Accepted, Confirmation, CreateSpoilerAlert, GetSpoilerAlert, Rejected, SpoilerAlertBehavior, SpoilerAlertCommand, SpoilerAlertState}
 import com.datastax.driver.core.utils.UUIDs
 import com.lightbend.lagom.scaladsl.api.transport.TransportErrorCode.UnexpectedCondition
@@ -35,8 +35,6 @@ import scala.collection.immutable
   */
 class SpoilerAlertServiceImpl(
   clusterSharding: ClusterSharding,
-  persistentEntityRegistry: PersistentEntityRegistry,
-  autoKeyDao: AutoKeyDao,
   userSeriesDao: UserSeriesDao,
   messagesApi: MessagesApi,
   languages: Langs
@@ -154,13 +152,6 @@ class SpoilerAlertServiceImpl(
     }.map {
       case x:Accepted => Option(x.summary.userSeriesStatus)
       case _        => None
-    }
-  }
-
-  private def getAutoKey: Future[Option[String]] = {
-    autoKeyDao.getNextKey(KeyUserSeries()).map {
-      case Some(autoKey) => Some(s"${autoKey.keyNumber}")
-      case None => None
     }
   }
 

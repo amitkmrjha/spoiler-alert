@@ -41,10 +41,4 @@ percentage double,
 PRIMARY KEY (series_name,percentage,user_name)
 );
 
-CREATE TABLE IF NOT EXISTS spoiler_alert.auto_key (
-model_context text,
-model_name text,
-key_number counter,
-PRIMARY KEY (model_context, model_name)
-) WITH CLUSTERING ORDER BY ( model_name ASC );
 

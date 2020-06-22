@@ -8,7 +8,7 @@ import com.lightbend.lagom.scaladsl.server._
 import com.lightbend.lagom.scaladsl.devmode.LagomDevModeComponents
 import play.api.libs.ws.ahc.AhcWSComponents
 import com.amit.spoileralert.api.SpoilerAlertService
-import com.amit.spoileralert.impl.daos.{AutoKeyDao, AutoKeyDaoImpl, UserSeriesDao}
+import com.amit.spoileralert.impl.daos.{ UserSeriesDao}
 import com.amit.spoileralert.impl.entity.{SpoilerAlertBehavior, SpoilerAlertSerializerRegistry, SpoilerAlertState}
 import com.lightbend.lagom.scaladsl.broker.kafka.LagomKafkaComponents
 import com.lightbend.lagom.scaladsl.playjson.JsonSerializerRegistry
@@ -40,8 +40,6 @@ abstract class SpoilerAlertApplication(context: LagomApplicationContext)
   override lazy val jsonSerializerRegistry: JsonSerializerRegistry = SpoilerAlertSerializerRegistry
 
   readSide.register(wire[SpoilerAlertEventProcessor])
-
-  lazy val autoKeyDao: AutoKeyDao = wire[AutoKeyDaoImpl]
 
   lazy val userSeriesDao: UserSeriesDao = wire[UserSeriesDao]
 

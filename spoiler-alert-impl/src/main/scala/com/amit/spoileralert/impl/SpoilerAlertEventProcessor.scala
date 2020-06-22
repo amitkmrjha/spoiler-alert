@@ -2,7 +2,7 @@ package com.amit.spoileralert.impl
 
 import akka.Done
 import com.amit.spoiler.UserSeriesStatus
-import com.amit.spoileralert.impl.daos.{AutoKeyTable, UserSeriesByKeyTable, UserSeriesBySeriesPercentageTable, UserSeriesByUserTable, UserSeriesTable}
+import com.amit.spoileralert.impl.daos.{UserSeriesByKeyTable, UserSeriesBySeriesPercentageTable, UserSeriesByUserTable, UserSeriesTable}
 import com.amit.spoileralert.impl.entity.{SpoilerAlertCreated, SpoilerAlertDeleted, SpoilerAlertEvent, SpoilerAlertUpdated}
 import com.datastax.driver.core.{BoundStatement, PreparedStatement}
 import com.lightbend.lagom.scaladsl.persistence.cassandra.{CassandraReadSide, CassandraSession}
@@ -42,8 +42,6 @@ private[impl] class SpoilerAlertEventProcessor(session: CassandraSession,
       _ <- UserSeriesByKeyTable.createTable()(session, ec)
       _ <- UserSeriesByUserTable.createTable()(session, ec)
       _ <- UserSeriesBySeriesPercentageTable.createTable()(session, ec)
-
-      _ <- sessionExecuteCreateTable(AutoKeyTable.tableScript)
     } yield Done
   }
 
